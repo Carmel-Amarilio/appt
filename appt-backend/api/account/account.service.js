@@ -97,21 +97,12 @@ async function getByPhone(phone) {
 
 
 async function addAppt(newAppt) {
-    const { accountId, calendarId, date, appt } = newAppt
+    const { accountId, appt } = newAppt
     try {
         const collection = await dbService.getCollection('account');
         const account = await collection.findOne({ _id: ObjectId(accountId) });
-        const calendar = account.calendars.find(({ _id }) => _id === calendarId)
-        let scheduledDate = calendar.scheduledDates.find(({ _id }) => new Date(_id).getTime() === new Date(date).getTime())
-        if (scheduledDate) scheduledDate.daysSchedule.push(appt)
-        else {
-            const { startTime, finishesTime, apptLong, breakTime, hoursOff } = calendar
-            scheduledDate = { _id: date, dayStartTime: startTime, dayFinishesTime: finishesTime, dayApptLong: apptLong, dayBreakTime: breakTime, dayHoursOff: hoursOff, daysSchedule: [appt] }
-            calendar.scheduledDates.push(scheduledDate)
-        }
-
+        account.calendar.events.push(appt)
         return update(account)
-
     } catch (err) {
         logger.error(`cannot insert appt`, err)
         throw err
@@ -119,16 +110,11 @@ async function addAppt(newAppt) {
 }
 
 async function removeAppt(appt) {
-    const { accountId, calendarId, date, apptId } = appt
-    console.log(appt);
+    const { accountId, apptId } = appt
     try {
         const collection = await dbService.getCollection('account');
         const account = await collection.findOne({ _id: ObjectId(accountId) });
-        const calendar = account.calendars.find(({ _id }) => _id === calendarId)
-        const scheduledDate = calendar.scheduledDates.find(({ _id }) => new Date(_id).getTime() === new Date(date).getTime())
-        const newsDaysSchedule = scheduledDate.daysSchedule.filter(({ _id }) => _id != apptId)
-        scheduledDate.daysSchedule = newsDaysSchedule
-
+        account.calendar.events = account.calendar.events.filter(({ _id }) => _id !== apptId)
         return update(account)
 
     } catch (err) {

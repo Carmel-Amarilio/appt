@@ -58,7 +58,6 @@ export async function updateAccount(req, res) {
 }
 
 export async function removeAccount(req, res) {
-    console.log('hi from remove account');
     const { loggedinUser } = req
     try {
         const accountId = req.params.id
@@ -85,7 +84,6 @@ export async function addApptToCalendar(req, res) {
 export async function removeApptFromCalendar(req, res) {
     try {
         const appt = req.body
-        // console.log(appt);
         const updatedAccount = await accountService.removeAppt(appt)
         res.json(updatedAccount)
 

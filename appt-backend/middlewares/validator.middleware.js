@@ -20,42 +20,36 @@ const locSchema = Joi.object({
 });
 
 const calendarSchema = Joi.object({
-    _id: Joi.string().required(),
-    title: Joi.string().min(1).required(),
-    is: Joi.boolean(),
-    startTime: Joi.string().required(),
-    finishesTime: Joi.string().required(),
-    apptLong: Joi.number().required(),
-    breakTime: Joi.number().required(),
-    daysOff: Joi.array().items(Joi.string()).required(),
-    hoursOff: Joi.array().items(Joi.object({
-        start: Joi.string(),
-        end: Joi.string(),
-    })).required(),
-    apptTimes: Joi.array().items(Joi.object({
-        start: Joi.string().required(),
-        end: Joi.string().required(),
-    })).required(),
-    datesNotAvailable: Joi.array().items(Joi.date()),
-    scheduledDates: Joi.array().items(Joi.object({
-        _id: Joi.date(),
-        dayStartTime: Joi.string(),
-        dayFinishesTime: Joi.string(),
-        dayApptLong: Joi.number(),
-        dayBreakTime: Joi.number(),
-        dayHoursOff: Joi.array().items(Joi.object({
-            start: Joi.string(),
-            end: Joi.string(),
-        })),
-        daysSchedule: Joi.array().items(Joi.object({
-            start: Joi.string(),
-            end: Joi.string(),
-            phone: Joi.string(),
-            name: Joi.string(),
-            _id: Joi.string(),
-        })),
+    EndingHourDay: Joi.string().required(),
+    startingHourDay: Joi.string().required(),
+    apptServices: Joi.array().items(Joi.object({
+        _id: Joi.string().required(),
+        title: Joi.string().required(),
+        color: Joi.string().required(),
+        apptDuration: Joi.number().required(),
+        breakDuration: Joi.number().required(),
     })),
-});
+    events: Joi.array().items(Joi.object({
+        _id: Joi.string().required(),
+        title: Joi.string().required(),
+        color: Joi.string().optional(),
+        start: Joi.date(),
+        end: Joi.date(),
+        repeats: Joi.number().required(),
+        notes: Joi.string().optional(),
+        participants: Joi.string().optional(),
+        className: Joi.string().optional(),
+        borderColor: Joi.string().optional(),
+        datesChange: Joi.array().optional().items(Joi.object({
+            oldStart: Joi.date(),
+            newStart: Joi.date(),
+            newEnd: Joi.date(),
+        })),
+        dateDelete: Joi.array().optional().items(Joi.object({
+            start: Joi.date(),
+        }))
+    }))
+})
 
 const accountSchema = Joi.object({
     _id: Joi.string().optional(),
@@ -67,6 +61,6 @@ const accountSchema = Joi.object({
     imgsUrl: Joi.array().items(Joi.string()).allow(''),
     instaName: Joi.string().allow(''),
     loc: locSchema,
-    calendars: Joi.array().items(calendarSchema),
+    calendar: calendarSchema,
 });
 
