@@ -9,7 +9,6 @@ export async function login(req, res) {
 
         logger.info('User login: ', account)
         res.cookie('loginToken', loginToken)
-        console.log(account);
         res.json(account)
     } catch (err) {
         logger.error('Failed to Login ' + err)

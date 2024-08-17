@@ -11,7 +11,6 @@ export const socketService = {
 }
 
 export function setupSocketAPI(http) {
-    console.log('trest');
     gIo = new Server(http, {
         cors: {
             origin: '*',
@@ -22,7 +21,7 @@ export function setupSocketAPI(http) {
         socket.on('disconnect', socket => {
             logger.info(`Socket disconnected [id: ${socket.id}]`)
         })
-        socket.on('chat-set-topic', topic => {
+        socket.on('account-set-topic', topic => {
             if (socket.myTopic === topic) return
             if (socket.myTopic) {
                 socket.leave(socket.myTopic)
@@ -31,20 +30,14 @@ export function setupSocketAPI(http) {
             socket.join(topic)
             socket.myTopic = topic
         })
-        socket.on('chat-send-msg', msg => {
-            logger.info(`New chat msg from socket [id: ${socket.id}], emitting to topic ${socket.myTopic}`)
-            gIo.to(socket.myTopic).emit('chat-add-msg', msg)
+        socket.on('update-account', data => {
+            broadcast({ type: 'mew-account', data: data._id, room: data._id, userId: socket.id })
         })
-        socket.on('user-watch', userId => {
-            logger.info(`user-watch from socket [id: ${socket.id}], on user ${userId}`)
-            socket.join('watching:' + userId)
-
-        })
-        socket.on('set-user-socket', userId => {
+        socket.on('set-account-socket', userId => {
             logger.info(`Setting socket.userId = ${userId} for socket [id: ${socket.id}]`)
             socket.userId = userId
         })
-        socket.on('unset-user-socket', () => {
+        socket.on('unset-account-socket', () => {
             logger.info(`Removing socket.userId for socket [id: ${socket.id}]`)
             delete socket.userId
         })
