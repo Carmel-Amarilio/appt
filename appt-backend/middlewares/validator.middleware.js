@@ -9,6 +9,15 @@ export const validateAccount = (req, res, next) => {
     next()
 }
 
+export const validateAppt = (req, res, next) => {
+    const { error } = apptSchema.validate(req.body, { abortEarly: false });
+    if (error) {
+        console.log(error);
+        return res.status(400).json({ error: error.details.map((err) => err.message) });
+    }
+    next()
+}
+
 
 const locSchema = Joi.object({
     country: Joi.string().min(2).allow(''),
@@ -17,6 +26,28 @@ const locSchema = Joi.object({
     houseNumber: Joi.string().min(1).allow(''),
     lat: Joi.number().allow(0),
     lng: Joi.number().allow(0),
+});
+
+const eventSchema = Joi.object({
+    _id: Joi.string().required(),
+    title: Joi.string().required(),
+    color: Joi.string().optional(),
+    start: Joi.date(),
+    end: Joi.date(),
+    repeats: Joi.number().required(),
+    notes: Joi.string().optional(),
+    participants: Joi.string().optional(),
+    apptServiceId: Joi.string().optional(),
+    className: Joi.string().optional(),
+    borderColor: Joi.string().optional(),
+    datesChange: Joi.array().optional().items(Joi.object({
+        oldStart: Joi.date(),
+        newStart: Joi.date(),
+        newEnd: Joi.date(),
+    })),
+    dateDelete: Joi.array().optional().items(Joi.object({
+        start: Joi.date(),
+    }))
 });
 
 const calendarSchema = Joi.object({
@@ -29,26 +60,7 @@ const calendarSchema = Joi.object({
         apptDuration: Joi.number().required(),
         breakDuration: Joi.number().required(),
     })),
-    events: Joi.array().items(Joi.object({
-        _id: Joi.string().required(),
-        title: Joi.string().required(),
-        color: Joi.string().optional(),
-        start: Joi.date(),
-        end: Joi.date(),
-        repeats: Joi.number().required(),
-        notes: Joi.string().optional(),
-        participants: Joi.string().optional(),
-        className: Joi.string().optional(),
-        borderColor: Joi.string().optional(),
-        datesChange: Joi.array().optional().items(Joi.object({
-            oldStart: Joi.date(),
-            newStart: Joi.date(),
-            newEnd: Joi.date(),
-        })),
-        dateDelete: Joi.array().optional().items(Joi.object({
-            start: Joi.date(),
-        }))
-    }))
+    events: Joi.array().items(eventSchema)
 })
 
 const accountSchema = Joi.object({
@@ -62,5 +74,10 @@ const accountSchema = Joi.object({
     instaName: Joi.string().allow(''),
     loc: locSchema,
     calendar: calendarSchema,
+});
+
+const apptSchema = Joi.object({
+    accountId: Joi.string().min(1).required(),
+    appt: eventSchema,
 });
 

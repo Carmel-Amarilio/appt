@@ -101,6 +101,7 @@ async function addAppt(newAppt) {
     try {
         const collection = await dbService.getCollection('account');
         const account = await collection.findOne({ _id: ObjectId(accountId) });
+        if (!utilService.isApptAvailable(account.calendar, appt)) throw Error('Appointment not available');
         account.calendar.events.push(appt)
         return update(account)
     } catch (err) {
