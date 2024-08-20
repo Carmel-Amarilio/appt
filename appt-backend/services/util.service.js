@@ -94,10 +94,10 @@ function isApptAvailable(calendar, appt) {
 }
 
 function calculateOptimalAppointments(events, apptService) {
-    const { apptDuration, breakDuration, color } = apptService;
+    const { apptDuration, breakDuration, color, latestBook, earliestBook } = apptService;
     const appointments = [];
-    const startDay = new Date().setHours(0, 0, 0, 0);
-    const endDay = new Date(new Date().getFullYear(), new Date().getMonth() + 1);
+    const startDay = new Date(new Date()).setDate(new Date().getDate() + earliestBook)
+    const endDay = (new Date(new Date()).setDate(new Date().getDate() + latestBook))
 
     // Sort events by start time
     events.sort((a, b) => +a.start - +b.start);
@@ -125,10 +125,7 @@ function calculateOptimalAppointments(events, apptService) {
                 appointments.push({
                     start: appointmentStart,
                     end: appointmentEnd,
-                    title: 'appt Option',
                     repeats: 0,
-                    className: 'appt-option',
-                    borderColor: color
                 });
 
                 lastEndTime = appointmentEnd.getTime() + breakDuration * 60000;

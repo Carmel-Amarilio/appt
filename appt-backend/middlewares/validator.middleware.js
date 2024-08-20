@@ -19,14 +19,7 @@ export const validateAppt = (req, res, next) => {
 }
 
 
-const locSchema = Joi.object({
-    country: Joi.string().min(2).allow(''),
-    city: Joi.string().min(2).allow(''),
-    street: Joi.string().min(2).allow(''),
-    houseNumber: Joi.string().min(1).allow(''),
-    lat: Joi.number().allow(0),
-    lng: Joi.number().allow(0),
-});
+
 
 const eventSchema = Joi.object({
     _id: Joi.string().required(),
@@ -50,6 +43,13 @@ const eventSchema = Joi.object({
     }))
 });
 
+
+
+const apptSchema = Joi.object({
+    accountId: Joi.string().min(1).required(),
+    appt: eventSchema,
+})
+
 const calendarSchema = Joi.object({
     EndingHourDay: Joi.string().required(),
     startingHourDay: Joi.string().required(),
@@ -59,8 +59,19 @@ const calendarSchema = Joi.object({
         color: Joi.string().required(),
         apptDuration: Joi.number().required(),
         breakDuration: Joi.number().required(),
+        latestBook: Joi.number().required(),
+        earliestBook: Joi.number().required(),
     })),
     events: Joi.array().items(eventSchema)
+})
+
+const locSchema = Joi.object({
+    country: Joi.string().min(2).allow(''),
+    city: Joi.string().min(2).allow(''),
+    street: Joi.string().min(2).allow(''),
+    houseNumber: Joi.string().min(1).allow(''),
+    lat: Joi.number().allow(0),
+    lng: Joi.number().allow(0),
 })
 
 const accountSchema = Joi.object({
@@ -74,10 +85,4 @@ const accountSchema = Joi.object({
     instaName: Joi.string().allow(''),
     loc: locSchema,
     calendar: calendarSchema,
-});
-
-const apptSchema = Joi.object({
-    accountId: Joi.string().min(1).required(),
-    appt: eventSchema,
-});
-
+})
