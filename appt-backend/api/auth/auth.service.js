@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 
 import { logger } from '../../services/logger.service.js'
 import { accountService } from '../account/account.service.js'
+import { InvalidLogin } from '../../services/errorMessege.js'
 
 export const authService = {
     login,
@@ -16,10 +17,10 @@ async function login(phone, password) {
     logger.debug(`auth.service - login with accountName: ${phone}`)
 
     const account = await accountService.getByPhone(phone)
-    if (!account) throw new Error('Invalid accountName or password')
+    if (!account) throw new Error(InvalidLogin)
 
     const match = await bcrypt.compare(password, account.password)
-    if (!match) throw new Error('Invalid accountName or password')
+    if (!match) throw new Error(InvalidLogin)
 
     delete account.password
     return account

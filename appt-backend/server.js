@@ -35,6 +35,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/account', accountRoutes)
 setupSocketAPI(server)
 
+
 const port = process.env.PORT || 3030
 server.listen(port, () => {
     logger.info(`Server listening on port http://127.0.0.1:${port}/`)

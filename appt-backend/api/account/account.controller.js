@@ -1,13 +1,16 @@
+import { apptTaken } from "../../services/errorMessege.js"
 import { logger } from "../../services/logger.service.js"
 import { socketService } from "../../services/socket.service.js"
 import { authService } from "../auth/auth.service.js"
 import { accountService } from "./account.service.js"
 
-export async function getAccounts(req, res) {
 
+
+export async function getAccounts(req, res) {
     try {
         const filterBy = {
             bizName: req.query.bizName || '',
+            page: req.query.page || 0,
         }
         logger.debug('Getting A', filterBy)
         const accounts = await accountService.query(filterBy)
@@ -71,13 +74,15 @@ export async function removeAccount(req, res) {
 }
 
 export async function addApptToCalendar(req, res) {
+
     try {
         const newAppt = req.body
         const updatedAccount = await accountService.addAppt(newAppt)
         res.json(updatedAccount)
     } catch (err) {
         logger.error('Failed to add appt', err)
-        res.status(500).send({ err: 'Failed to add appt' })
+        if (err.message === apptTaken) res.status(400).json({ error: apptTaken })
+        else res.status(500).json({ error: 'Failed to add appt' });
     }
 }
 

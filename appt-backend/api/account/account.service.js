@@ -5,6 +5,7 @@ const { ObjectId } = mongodb;
 import { dbService } from '../../services/db.service.js';
 import { logger } from '../../services/logger.service.js';
 import { utilService } from '../../services/util.service.js';
+import { apptTaken } from '../../services/errorMessege.js';
 
 export const accountService = {
     remove,
@@ -17,14 +18,20 @@ export const accountService = {
     removeAppt
 };
 
-async function query({ bizName }) {
+const gLockedAppt = {}
+
+
+
+async function query({ bizName, page }) {
+    const pageQuantity = 3
+    const skip = page * pageQuantity
     try {
         const criteria = {};
         criteria['name'] = { $regex: bizName, $options: 'i' }
 
         const collection = await dbService.getCollection('account');
-        const accounts = await collection.find(criteria).toArray();
-        accounts.map(account => delete account.password);
+        const accounts = await collection.find(criteria).skip(skip).limit(pageQuantity).toArray();
+        accounts.forEach(account => delete account.password);
         return accounts
     } catch (err) {
         logger.error('Cannot find accounts', err);
@@ -98,12 +105,19 @@ async function getByPhone(phone) {
 
 async function addAppt(newAppt) {
     const { accountId, appt } = newAppt
+
+    const strTimeKey = `${accountId}${appt.start}${appt.end}`
+    if (gLockedAppt[strTimeKey]) throw new Error(apptTaken)
+    gLockedAppt[strTimeKey] = true
+
     try {
         const collection = await dbService.getCollection('account');
         const account = await collection.findOne({ _id: ObjectId(accountId) });
-        if (!utilService.isApptAvailable(account.calendar, appt)) throw Error('Appointment not available');
+        if (!utilService.isApptAvailable(account.calendar, appt)) throw Error(apptTaken);
+        await collection.updateOne({ _id: ObjectId(accountId) }, { $push: { 'calendar.events': appt } })
         account.calendar.events.push(appt)
-        return update(account)
+        delete gLockedAppt[strTimeKey]
+        return account
     } catch (err) {
         logger.error(`cannot insert appt`, err)
         throw err
@@ -115,8 +129,9 @@ async function removeAppt(appt) {
     try {
         const collection = await dbService.getCollection('account');
         const account = await collection.findOne({ _id: ObjectId(accountId) });
+        await collection.updateOne({ _id: ObjectId(accountId) }, { $pull: { 'calendar.events': { _id: apptId } } })
         account.calendar.events = account.calendar.events.filter(({ _id }) => _id !== apptId)
-        return update(account)
+        return account
 
     } catch (err) {
         logger.error(`cannot remove appt`, err)

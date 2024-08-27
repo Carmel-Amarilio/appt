@@ -1,5 +1,6 @@
 import { authService } from './auth.service.js'
 import { logger } from '../../services/logger.service.js'
+import { InvalidLogin } from '../../services/errorMessege.js'
 
 export async function login(req, res) {
     const { phone, password } = req.body
@@ -12,7 +13,8 @@ export async function login(req, res) {
         res.json(account)
     } catch (err) {
         logger.error('Failed to Login ' + err)
-        res.status(401).send({ err: 'Failed to Login' })
+        if (err.message === InvalidLogin) res.status(400).json({ error: InvalidLogin })
+        else res.status(500).json({ error: 'Failed to Login' });
     }
 }
 

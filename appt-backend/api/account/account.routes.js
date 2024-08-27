@@ -14,4 +14,3 @@ accountRoutes.post('/appt', validateAppt, addApptToCalendar)
 accountRoutes.delete('/appt', removeApptFromCalendar)
 
 accountRoutes.delete('/:id', requireAuth, removeAccount)
-// stayRoutes.put('/like/:id', requireAuth, updateStayLikes)
