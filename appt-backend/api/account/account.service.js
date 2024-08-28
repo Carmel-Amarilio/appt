@@ -23,7 +23,7 @@ const gLockedAppt = {}
 
 
 async function query({ bizName, page }) {
-    const pageQuantity = 3
+    const pageQuantity = 5
     const skip = page * pageQuantity
     try {
         const criteria = {};
