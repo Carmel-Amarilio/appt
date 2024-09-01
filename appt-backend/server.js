@@ -6,7 +6,7 @@ import cors from 'cors'
 import { logger } from './services/logger.service.js';
 import { setupSocketAPI } from './services/socket.service.js';
 import { authRoutes } from './api/auth/auth.routes.js';
-import { accountRoutes } from './api/account/account.routes.js';
+import { accountRoutes } from './api/account/account.routes.ts';
 
 
 const app = express()
