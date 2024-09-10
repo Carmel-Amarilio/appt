@@ -98,6 +98,8 @@ function calculateOptimalAppointments(events, apptService) {
     const appointments = [];
     const startDay = new Date(new Date()).setDate(new Date().getDate() + earliestBook)
     const endDay = (new Date(new Date()).setDate(new Date().getDate() + latestBook))
+    const now = new Date();
+
 
     // Sort events by start time
     events.sort((a, b) => +a.start - +b.start);
@@ -120,13 +122,15 @@ function calculateOptimalAppointments(events, apptService) {
 
             while (lastEndTime + apptDuration * 60000 <= nextStartTime) {
                 let appointmentStart = new Date(lastEndTime);
-                let appointmentEnd = new Date(appointmentStart.getTime() + apptDuration * 60000);
+                let appointmentEnd = new Date(appointmentStart.getTime() + apptDuration * 60000)
 
-                appointments.push({
-                    start: appointmentStart,
-                    end: appointmentEnd,
-                    repeats: 0,
-                });
+                if (appointmentStart >= now) {
+                    appointments.push({
+                        start: appointmentStart,
+                        end: appointmentEnd,
+                        repeats: 0,
+                    });
+                }
 
                 lastEndTime = appointmentEnd.getTime() + breakDuration * 60000;
             }

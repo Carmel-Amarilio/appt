@@ -35,12 +35,12 @@ const eventSchema = Joi.object({
     borderColor: Joi.string().optional(),
     datesChange: Joi.array().optional().items(Joi.object({
         oldStart: Joi.date(),
-        newEvent: Joi.array().optional().items(Joi.object({
+        newEvent: Joi.object({
             title: Joi.string().required(),
             color: Joi.string().optional(),
             start: Joi.date(),
             end: Joi.date(),
-        })),
+        }),
     })),
     dateDelete: Joi.array().optional().items(Joi.object({
         start: Joi.date(),

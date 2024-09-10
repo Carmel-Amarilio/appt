@@ -78,6 +78,7 @@ async function add(account) {
 }
 
 async function update(account) {
+    console.log(account);
     const { _id, ...rest } = account;
     try {
         const collection = await dbService.getCollection('account');
