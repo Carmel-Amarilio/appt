@@ -71,3 +71,12 @@ export interface FilterBy {
     page: number
 }
 
+export interface Appt {
+    accountId: string
+    appt: {
+        apptServiceId: string
+        start: Date
+        end: Date
+    }
+}
+

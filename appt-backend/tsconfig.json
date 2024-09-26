@@ -17,9 +17,10 @@
     "services/**/*.ts",
     "server.ts",
     "*.ts",
-    "api/account/account.routes.js",
-    "services/socket.service.js",
-    "services/logger.service.js"
+    "api/account/account.routes.ts",
+    "services/socket.service.ts",
+    "services/logger.service.ts",
+    "src/**/*",
   ],
   "exclude": [
     "node_modules",

@@ -1,5 +1,5 @@
-import configProd from './prod.js'
-// import configDev from './dev.js'
+import configProd from './prod'
+// import configDev from './dev'
 
 export var config: any
 config = configProd
