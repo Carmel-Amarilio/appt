@@ -1,30 +1,29 @@
 import fs from 'fs'
 import moment from "moment";
+import { ApptService, calendar, Event } from '../models/models';
 
 
 export const utilService = {
-    readJsonFile,
-    checkForAllDuplicates,
     makeId,
     isApptAvailable
 }
 
 
-function readJsonFile(path) {
-    const str = fs.readFileSync(path, 'utf8')
-    const json = JSON.parse(str)
-    return json
-}
+// function readJsonFile(path) {
+//     const str = fs.readFileSync(path, 'utf8')
+//     const json = JSON.parse(str)
+//     return json
+// }
 
 
-function checkForAllDuplicates(tags1, tags2) {
-    for (const tag1 of tags1) {
-        if (!tags2.includes(tag1)) {
-            return false;
-        }
-    }
-    return true;
-}
+// function checkForAllDuplicates(tags1, tags2) {
+//     for (const tag1 of tags1) {
+//         if (!tags2.includes(tag1)) {
+//             return false;
+//         }
+//     }
+//     return true;
+// }
 
 function makeId(length = 5) {
     var txt = ''
@@ -36,8 +35,8 @@ function makeId(length = 5) {
     return txt
 }
 
-function isApptAvailable(calendar, appt) {
-    const newEvents = [];
+function isApptAvailable(calendar: calendar, appt: { apptServiceId: string, start: Date, end: Date }) {
+    const newEvents: Event[] = [];
     calendar.events.forEach(event => {
 
         if (event.repeats > 0) {
@@ -47,16 +46,17 @@ function isApptAvailable(calendar, appt) {
             while (true) {
                 if (nextEventStart.isAfter(moment().add(1, 'months'))) break
 
-                const newEventInstance = {
+                let newEventInstance = {
                     ...event,
                     start: nextEventStart.toDate(),
                     end: nextEventEnd.toDate(),
                 }
 
-                if (event.datesChange) event.datesChange.forEach(({ oldStart, newStart, newEnd }) => {
+                if (event.datesChange) event.datesChange.forEach(({ oldStart, newEvent }) => {
                     if (new Date(oldStart).setMilliseconds(0) === nextEventStart.toDate().getTime()) {
-                        newEventInstance.start = new Date(newStart)
-                        newEventInstance.end = new Date(newEnd)
+                        newEventInstance = { ...newEventInstance, ...newEvent }
+                        newEventInstance.start = new Date(newEventInstance.start)
+                        newEventInstance.end = new Date(newEventInstance.end)
                     }
                 })
 
@@ -84,6 +84,7 @@ function isApptAvailable(calendar, appt) {
         } else { newEvents.push({ ...event, start: new Date(event.start), end: new Date(event.end) }) }
     })
     const apptService = calendar.apptServices.find(({ _id }) => _id === appt.apptServiceId)
+    if (!apptService) return false
     const allOpenAppt = calculateOptimalAppointments(newEvents, apptService)
     const apptExist = allOpenAppt.find(({ start, end }) =>
         new Date(appt.start).getTime() === new Date(start).getTime() &&
@@ -93,7 +94,7 @@ function isApptAvailable(calendar, appt) {
     return false
 }
 
-function calculateOptimalAppointments(events, apptService) {
+function calculateOptimalAppointments(events: Event[], apptService: ApptService) {
     const { apptDuration, breakDuration, color, latestBook, earliestBook } = apptService;
     const appointments = [];
     const startDay = new Date(new Date()).setDate(new Date().getDate() + earliestBook)

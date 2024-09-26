@@ -1,7 +1,7 @@
 import express from 'express'
-import { requireAuth } from '../../middlewares/requireAuth.middleware'
-import { validateAccount, validateAppt } from '../../middlewares/validator.middleware'
-import { getAccounts, getAccountById, addAccount, updateAccount, removeAccount, addApptToCalendar, removeApptFromCalendar, } from './account.controller'
+import { requireAuth } from '../../middlewares/requireAuth.middleware.js'
+import { validateAccount, validateAppt } from '../../middlewares/validator.middleware.ts'
+import { getAccounts, getAccountById, addAccount, updateAccount, removeAccount, addApptToCalendar, removeApptFromCalendar, } from './account.controller.js'
 
 export const accountRoutes = express.Router()
 
