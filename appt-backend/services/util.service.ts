@@ -100,10 +100,9 @@ function calculateOptimalAppointments(events: Event[], apptService: ApptService)
     const startDay = new Date(new Date()).setDate(new Date().getDate() + earliestBook)
     const endDay = (new Date(new Date()).setDate(new Date().getDate() + latestBook))
 
-    // Sort events by start time
     events.sort((a, b) => +a.start - +b.start);
 
-    // Generate appointments for each day
+    // @ts-ignore
     for (let day = new Date(startDay); day <= endDay; day.setDate(day.getDate() + 1)) {
         let dayStart = new Date(day.setHours(0, 0, 0, 0));
         let dayEnd = new Date(day.setHours(23, 59, 59, 999));

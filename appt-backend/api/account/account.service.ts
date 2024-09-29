@@ -29,7 +29,7 @@ async function query({ bizName, page }: FilterBy): Promise<Account[]> {
 
         const collection = await dbService.getCollection('account');
         const accounts: Account[] = await collection.find(criteria).skip(skip).limit(pageQuantity).toArray();
-        accounts.forEach((account) => delete account.password);
+        accounts.forEach((account) => delete account.password)
         return accounts;
     } catch (err) {
         logger.error('Cannot find accounts', err);
@@ -42,6 +42,7 @@ async function getById(accountId: string): Promise<Account | null> {
         const collection = await dbService.getCollection('account');
         const account = await collection.findOne({ _id: new ObjectId(accountId) });
         if (account) delete account.password;
+        // @ts-ignore
         return account;
     } catch (err) {
         logger.error(`while finding account ${accountId}`, err);
@@ -60,17 +61,19 @@ async function remove(accountId: string): Promise<void> {
 }
 
 async function add(account: Account): Promise<Account> {
-    const { password } = account;
+    const { password } = account
     const saltRounds = 10;
+    if (!password) throw new Error('Password is required')
     try {
-        const collection = await dbService.getCollection('account');
-        const hash = await bcrypt.hash(password, saltRounds);
-        const accountToSave = { ...account, password: hash };
-        await collection.insertOne(accountToSave);
-        return accountToSave;
+        const collection = await dbService.getCollection('account')
+        const hash = await bcrypt.hash(password, saltRounds)
+        const accountToSave: Account = { ...account, password: hash }
+        // @ts-ignore
+        await collection.insertOne(accountToSave)
+        return accountToSave
     } catch (err) {
-        logger.error('cannot insert account', err);
-        throw err;
+        logger.error('cannot insert account', err)
+        throw err
     }
 }
 
@@ -79,6 +82,7 @@ async function update(account: Account): Promise<Account> {
     try {
         const collection = await dbService.getCollection('account');
         await collection.updateOne({ _id: new ObjectId(_id) }, { $set: rest });
+        // @ts-ignore
         return account;
     } catch (err) {
         logger.error(`cannot update account ${_id}`, err);
@@ -90,6 +94,7 @@ async function getByPhone(phone: string): Promise<Account | null> {
     try {
         const collection = await dbService.getCollection('account');
         const account = await collection.findOne({ phone });
+        // @ts-ignore
         return account;
     } catch (err) {
         logger.error(`while finding account ${phone}`, err);
@@ -116,6 +121,7 @@ async function addAppt(newAppt: Appt): Promise<Account> {
         await collection.updateOne({ _id: new ObjectId(accountId) }, { $push: { 'calendar.events': appt } });
         account.calendar.events.push(appt);
         delete gLockedAppt[strTimeKey];
+        // @ts-ignore
         return account;
     } catch (err) {
         logger.error('cannot insert appt', err);
@@ -128,6 +134,7 @@ async function removeAppt(appt: { accountId: string, apptId: string }): Promise<
     const { accountId, apptId } = appt;
     try {
         const collection = await dbService.getCollection('account');
+        // @ts-ignore
         const account: Account = await collection.findOne({ _id: new ObjectId(accountId) });
         if (!account) throw new Error('Account not found');
 

@@ -3,7 +3,7 @@ export interface Account {
     _id?: string
     name: string
     phone: string
-    password: string
+    password?: string
     profileImgUrl: string
     backImgUrl: string
     imgsUrl: string[]

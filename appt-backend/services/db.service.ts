@@ -1,4 +1,4 @@
-import { MongoClient, Db, Collection } from 'mongodb';
+import { MongoClient } from 'mongodb';
 import { config } from '../config/index';
 import { logger } from './logger.service';
 
@@ -6,9 +6,9 @@ export const dbService = {
     getCollection
 };
 
-let dbConn: Db | null = null;
+let dbConn: any | null = null;
 
-async function getCollection(collectionName: string): Promise<Collection> {
+async function getCollection(collectionName: string): Promise<any> {
     try {
         const db = await _connect();
         const collection = db.collection(collectionName);
@@ -19,11 +19,13 @@ async function getCollection(collectionName: string): Promise<Collection> {
     }
 }
 
-async function _connect(): Promise<Db> {
+async function _connect(): Promise<any> {
     if (dbConn) return dbConn;
 
     try {
+        // @ts-ignore
         const client = await MongoClient.connect(config.dbURL, { useNewUrlParser: true, useUnifiedTopology: true });
+        // @ts-ignore
         const db = client.db(config.dbName);
         dbConn = db;
         return db;

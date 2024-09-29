@@ -39,7 +39,7 @@ export async function addAccount(req: Request, res: Response): Promise<void> {
         const account: Account = req.body
         const { phone, password } = account
         const addedAccount = await accountService.add(account)
-
+        if (!password) throw new Error('Password is required')
         const user = await authService.login(phone, password)
         const loginToken = authService.getLoginToken(user)
         res.cookie('loginToken', loginToken)
@@ -80,10 +80,12 @@ export async function addApptToCalendar(req: Request, res: Response): Promise<vo
         const newAppt: Appt = req.body
         const updatedAccount = await accountService.addAppt(newAppt)
         res.json(updatedAccount)
-    } catch (err) {
+    } catch (err: unknown) {
         logger.error('Failed to add appt', err)
-        if (err.message === apptTaken) res.status(400).json({ error: apptTaken })
-        else res.status(500).json({ error: 'Failed to add appt' })
+        if (err instanceof Error) {
+            if (err.message === apptTaken) res.status(400).json({ error: apptTaken })
+            else res.status(500).json({ error: 'Failed to add appt' })
+        }
     }
 }
 

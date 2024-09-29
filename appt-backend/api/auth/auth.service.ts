@@ -19,7 +19,7 @@ async function login(phone: string, password: string) {
 
     const account = await accountService.getByPhone(phone)
     if (!account) throw new Error(InvalidLogin)
-
+    if (!account.password) throw new Error('Password is required')
     const match = await bcrypt.compare(password, account.password)
     if (!match) throw new Error(InvalidLogin)
 
@@ -38,7 +38,7 @@ function getLoginToken(account: Account) {
 
 
 
-function validateToken(loginToken) {
+function validateToken(loginToken: string) {
     try {
         const json = cryptr.decrypt(loginToken)
         const loggedinUser = JSON.parse(json)

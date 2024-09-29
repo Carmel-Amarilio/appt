@@ -111,7 +111,8 @@ async function _getUserSocket(userId: string): Promise<CustomSocket | undefined>
 }
 
 async function _getAllSockets(): Promise<CustomSocket[]> {
-    return await gIo?.fetchSockets() ?? [];
+    const sockets = await gIo?.fetchSockets()
+    return sockets as unknown as CustomSocket[];
 }
 
 async function _printSockets(): Promise<void> {

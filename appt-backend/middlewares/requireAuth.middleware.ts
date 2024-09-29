@@ -10,6 +10,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     const loggedinUser = authService.validateToken(req.cookies.loginToken)
     if (!loggedinUser) return res.status(401).send('Not Authenticated')
 
+    // @ts-ignore
     req.loggedinUser = loggedinUser
     next()
 }

@@ -1,3 +1,1 @@
-
-
-declare module 'mongodb';
+declare module 'mongodb'
