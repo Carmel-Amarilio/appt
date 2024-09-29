@@ -3,10 +3,10 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
-import { logger } from './services/logger.service.js';
-import { setupSocketAPI } from './services/socket.service.js';
-import { authRoutes } from './api/auth/auth.routes.js';
-import { accountRoutes } from './api/account/account.routes.js';
+import { logger } from './services/logger.service';
+import { setupSocketAPI } from './services/socket.service';
+import { authRoutes } from './api/auth/auth.routes';
+import { accountRoutes } from './api/account/account.routes';
 
 
 const app = express()

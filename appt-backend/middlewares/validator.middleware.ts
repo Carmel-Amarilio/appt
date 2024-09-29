@@ -1,6 +1,7 @@
+import { Request, Response, NextFunction } from 'express';
 import Joi from "joi";
 
-export const validateAccount = (req, res, next) => {
+export const validateAccount = (req: Request, res: Response, next: NextFunction) => {
     const { error } = accountSchema.validate(req.body, { abortEarly: false });
     if (error) {
         console.log(error);
@@ -9,7 +10,7 @@ export const validateAccount = (req, res, next) => {
     next()
 }
 
-export const validateAppt = (req, res, next) => {
+export const validateAppt = (req: Request, res: Response, next: NextFunction) => {
     const { error } = apptSchema.validate(req.body, { abortEarly: false });
     if (error) {
         console.log(error);

@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "rootDir": "./",
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+  },
+  "include": [
+    "api/**/*.ts",
+    "config/**/*.ts",
+    "middlewares/**/*.ts",
+    "models/**/*.ts",
+    "services/**/*.ts",
+    "server.ts",
+    "*.ts",
+    "/*.ts",
+    "api/account/account.routes.ts",
+    "services/socket.service.ts",
+    "services/logger.service.ts",
+    "src/**/*",
+    "./**/*.ts",
+    "types/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

@@ -1,7 +1,8 @@
-import { logger } from '../services/logger.service.js'
-import { authService } from '../api/auth/auth.service.js'
+import { Request, Response, NextFunction } from 'express';
+import { logger } from '../services/logger.service'
+import { authService } from '../api/auth/auth.service'
 
-export async function requireAuth(req, res, next) {
+export async function requireAuth(req: Request, res: Response, next: NextFunction) {
     if (!req?.cookies?.loginToken) {
         return res.status(401).send('Not Authenticated')
     }
@@ -9,11 +10,12 @@ export async function requireAuth(req, res, next) {
     const loggedinUser = authService.validateToken(req.cookies.loginToken)
     if (!loggedinUser) return res.status(401).send('Not Authenticated')
 
+    // @ts-ignore
     req.loggedinUser = loggedinUser
     next()
 }
 
-export async function requireAdmin(req, res, next) {
+export async function requireAdmin(req: Request, res: Response, next: NextFunction) {
     if (!req?.cookies?.loginToken) {
         return res.status(401).send('Not Authenticated')
     }

@@ -1,9 +1,10 @@
 import Cryptr from 'cryptr'
 import bcrypt from 'bcrypt'
 
-import { logger } from '../../services/logger.service.js'
-import { accountService } from '../account/account.service.js'
-import { InvalidLogin } from '../../services/errorMessege.js'
+import { logger } from '../../services/logger.service'
+import { accountService } from '../account/account.service'
+import { InvalidLogin } from '../../services/errorMessege'
+import { Account } from '../../models/models'
 
 export const authService = {
     login,
@@ -13,12 +14,12 @@ export const authService = {
 
 const cryptr = new Cryptr(process.env.SECRET1 || 'Secret-Puk-1234')
 
-async function login(phone, password) {
+async function login(phone: string, password: string) {
     logger.debug(`auth.service - login with accountName: ${phone}`)
 
     const account = await accountService.getByPhone(phone)
     if (!account) throw new Error(InvalidLogin)
-
+    if (!account.password) throw new Error('Password is required')
     const match = await bcrypt.compare(password, account.password)
     if (!match) throw new Error(InvalidLogin)
 
@@ -28,16 +29,16 @@ async function login(phone, password) {
 
 
 
-function getLoginToken(user) {
-    const { _id, fullName, isAdmin, userName } = user
-    const userInfo = { _id, fullName, isAdmin, userName }
+function getLoginToken(account: Account) {
+    const { _id, name, phone } = account
+    const userInfo = { _id, name, phone }
     return cryptr.encrypt(JSON.stringify(userInfo))
 }
 
 
 
 
-function validateToken(loginToken) {
+function validateToken(loginToken: string) {
     try {
         const json = cryptr.decrypt(loginToken)
         const loggedinUser = JSON.parse(json)
