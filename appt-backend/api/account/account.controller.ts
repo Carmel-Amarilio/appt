@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Account, Appt } from "../../models/models"
+import { Account, Appt, Event } from "../../models/models"
 import { apptTaken } from "../../services/errorMessege"
 import { logger } from "../../services/logger.service"
 import { socketService } from "../../services/socket.service"
@@ -79,6 +79,20 @@ export async function addApptToCalendar(req: Request, res: Response): Promise<vo
     try {
         const newAppt: Appt = req.body
         const updatedAccount = await accountService.addAppt(newAppt)
+        res.json(updatedAccount)
+    } catch (err: unknown) {
+        logger.error('Failed to add appt', err)
+        if (err instanceof Error) {
+            if (err.message === apptTaken) res.status(400).json({ error: apptTaken })
+            else res.status(500).json({ error: 'Failed to add appt' })
+        }
+    }
+}
+
+export async function updateApptInCalendar(req: Request, res: Response): Promise<void> {
+    try {
+        const newAppt: { appt: Event, accountId: string } = req.body
+        const updatedAccount = await accountService.updateAppt(newAppt)
         res.json(updatedAccount)
     } catch (err: unknown) {
         logger.error('Failed to add appt', err)

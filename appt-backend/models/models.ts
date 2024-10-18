@@ -9,12 +9,7 @@ export interface Account {
     imgsUrl: string[]
     instaName: string
     loc: Loc
-    calendar: {
-        events: Event[]
-        apptServices: ApptService[]
-        startingHourDay: string
-        EndingHourDay: string
-    }
+    calendar: calendar
 }
 export interface Loc {
     country: string
@@ -38,9 +33,13 @@ export interface Event {
     color?: string
     start: Date
     end: Date
-    repeats: number,
+    repeats: number
     notes?: string
-    participants?: string
+    participants?: {
+        name: string
+        phone: string
+    }[]
+    maxParticipants?: number
     apptServiceId?: string
     className?: string
     borderColor?: string
@@ -51,6 +50,10 @@ export interface Event {
             color: string
             start: Date
             end: Date
+            participants?: {
+                name: string
+                phone: string
+            }[]
         }
     }[]
     dateDelete?: {

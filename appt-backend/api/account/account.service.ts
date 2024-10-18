@@ -5,7 +5,7 @@ import { dbService } from '../../services/db.service';
 import { logger } from '../../services/logger.service';
 import { utilService } from '../../services/util.service';
 import { apptTaken } from '../../services/errorMessege';
-import { Account, Appt, FilterBy } from '../../models/models';
+import { Account, Appt, Event, FilterBy } from '../../models/models';
 
 export const accountService = {
     remove,
@@ -15,6 +15,7 @@ export const accountService = {
     update,
     getByPhone,
     addAppt,
+    updateAppt,
     removeAppt
 };
 
@@ -105,6 +106,7 @@ async function getByPhone(phone: string): Promise<Account | null> {
 async function addAppt(newAppt: Appt): Promise<Account> {
     const { accountId, appt } = newAppt;
 
+
     const strTimeKey = `${accountId}${appt.start}${appt.end}`;
     if (gLockedAppt[strTimeKey]) throw new Error(apptTaken);
     gLockedAppt[strTimeKey] = true;
@@ -126,6 +128,26 @@ async function addAppt(newAppt: Appt): Promise<Account> {
     } catch (err) {
         logger.error('cannot insert appt', err);
         delete gLockedAppt[strTimeKey];
+        throw err;
+    }
+}
+
+async function updateAppt(newAppt: { appt: Event, accountId: string }): Promise<Account> {
+    const { accountId, appt } = newAppt;
+
+    try {
+        const collection = await dbService.getCollection('account')
+        const account: Account = await collection.findOne({ _id: new ObjectId(accountId) })
+        if (!account) throw new Error('Account not found')
+        // @ts-ignore
+        if (appt.maxParticipants < appt.maxParticipants) {
+            throw new Error(apptTaken);
+        }
+
+        account.calendar.events = account.calendar.events.map(event => event._id === appt._id ? appt : event)
+        return update(account)
+    } catch (err) {
+        logger.error('cannot insert appt', err);
         throw err;
     }
 }

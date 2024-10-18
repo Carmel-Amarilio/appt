@@ -30,7 +30,11 @@ const eventSchema = Joi.object({
     end: Joi.date(),
     repeats: Joi.number().required(),
     notes: Joi.string().optional(),
-    participants: Joi.string().optional(),
+    participants: Joi.array().optional().items(Joi.object({
+        name: Joi.string().required(),
+        phone: Joi.string().required(),
+    })),
+    maxParticipants: Joi.number().optional(),
     apptServiceId: Joi.string().optional(),
     className: Joi.string().optional(),
     borderColor: Joi.string().optional(),
@@ -41,6 +45,10 @@ const eventSchema = Joi.object({
             color: Joi.string().optional(),
             start: Joi.date(),
             end: Joi.date(),
+            participants: Joi.array().optional().items(Joi.object({
+                name: Joi.string().required(),
+                phone: Joi.string().required(),
+            })),
         }),
     })),
     dateDelete: Joi.array().optional().items(Joi.object({
